@@ -10,7 +10,7 @@ gui.Name = "SHADOW_HUB"
 gui.ResetOnSpawn = false
 gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Botão flutuante
+-- Botão flutuante com ícone de batata frita
 local toggleBtn = Instance.new("TextButton")
 toggleBtn.Parent = gui
 toggleBtn.Size = UDim2.new(0, 50, 0, 50)
@@ -18,11 +18,10 @@ toggleBtn.Position = UDim2.new(0, 10, 0.5, -25)
 toggleBtn.BackgroundColor3 = Color3.fromRGB(25, 0, 40)
 toggleBtn.BorderColor3 = Color3.fromRGB(170, 0, 255)
 toggleBtn.BorderSizePixel = 2
-toggleBtn.Text = "≡"
-toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+toggleBtn.Text = ""
+toggleBtn.Image = "rbxassetid://126531256"  -- ID do ícone de batata frita (substitua se necessário)
+toggleBtn.ImageTransparency = 0.5  -- Ajuste a transparência da imagem se necessário
 toggleBtn.Font = Enum.Font.GothamBold
-toggleBtn.TextScaled = true
-toggleBtn.Draggable = false
 
 -- Arrastar para mobile
 local dragging, dragInput, dragStart, startPos
