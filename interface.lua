@@ -1,134 +1,112 @@
--- Carregar a interface simplificada e garantir a compatibilidade móvel
-local screenGui = Instance.new("ScreenGui", game.CoreGui)
-screenGui.Name = "SHADOW_UI"
 
--- Criando a aba de painel com fundo preto e bordas neon roxas
-local panel = Instance.new("Frame", screenGui)
-panel.Size = UDim2.new(0, 300, 0, 500)
-panel.Position = UDim2.new(0.5, -150, 0.5, -250)
-panel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-panel.BorderSizePixel = 2
-panel.BorderColor3 = Color3.fromRGB(138, 43, 226)  -- Roxo neon
-panel.Visible = false
+-- Interface SHADOW com layout moderno (cinza) e suporte mobile
+local User = game.Players.LocalPlayer
+local Mouse = User:GetMouse()
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.ResetOnSpawn = false
 
--- Botão flutuante para abrir/fechar a interface
-local floatButton = Instance.new("TextButton", screenGui)
-floatButton.Size = UDim2.new(0, 50, 0, 50)
-floatButton.Position = UDim2.new(0, 20, 0, 20)
-floatButton.BackgroundColor3 = Color3.fromRGB(138, 43, 226)  -- Roxo
-floatButton.Text = "A"
-floatButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-floatButton.Font = Enum.Font.SourceSansBold
-floatButton.TextSize = 24
+-- Painel principal
+local Main = Instance.new("Frame", ScreenGui)
+Main.Size = UDim2.new(0, 350, 0, 280)
+Main.Position = UDim2.new(0.5, -175, 0.5, -140)
+Main.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+Main.BorderSizePixel = 0
+Main.Visible = false
+Main.Active = true
+Main.Draggable = true
 
-floatButton.MouseButton1Click:Connect(function()
-    panel.Visible = not panel.Visible
-end)
+local UICorner = Instance.new("UICorner", Main)
+UICorner.CornerRadius = UDim.new(0, 12)
 
--- Criando a aba de "Dados do Script"
-local dataTab = Instance.new("Frame", panel)
-dataTab.Size = UDim2.new(1, 0, 0.2, 0)
-dataTab.Position = UDim2.new(0, 0, 0, 0)
-dataTab.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+-- Título
+local Title = Instance.new("TextLabel", Main)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundTransparency = 1
+Title.Text = "SHADOW HUB"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 24
+Title.Font = Enum.Font.GothamBold
 
-local dataLabel = Instance.new("TextLabel", dataTab)
-dataLabel.Size = UDim2.new(1, 0, 1, 0)
-dataLabel.Text = "Nome: SHADOW\nSkin: Default\nExecutor: KRNL"
-dataLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-dataLabel.TextSize = 18
-dataLabel.BackgroundTransparency = 1
+-- Abas
+local Tabs = {}
+local function createTab(name, posX)
+    local tab = Instance.new("TextButton", Main)
+    tab.Size = UDim2.new(0, 100, 0, 30)
+    tab.Position = UDim2.new(0, posX, 0, 50)
+    tab.Text = name
+    tab.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    tab.TextColor3 = Color3.fromRGB(255, 255, 255)
+    tab.TextSize = 14
+    tab.Font = Enum.Font.GothamSemibold
+    tab.Name = name.."Tab"
 
--- Criando as opções de Aimbot
-local aimbotTab = Instance.new("Frame", panel)
-aimbotTab.Size = UDim2.new(1, 0, 0.3, 0)
-aimbotTab.Position = UDim2.new(0, 0, 0.2, 0)
-aimbotTab.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    local corner = Instance.new("UICorner", tab)
+    corner.CornerRadius = UDim.new(0, 8)
 
-local aimbotLabel = Instance.new("TextLabel", aimbotTab)
-aimbotLabel.Size = UDim2.new(1, 0, 0.5, 0)
-aimbotLabel.Text = "Aimbot"
-aimbotLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-aimbotLabel.TextSize = 24
-aimbotLabel.BackgroundTransparency = 1
-
-local aimbotToggle = Instance.new("TextButton", aimbotTab)
-aimbotToggle.Size = UDim2.new(0.8, 0, 0.3, 0)
-aimbotToggle.Position = UDim2.new(0.1, 0, 0.5, 0)
-aimbotToggle.Text = "OFF"
-aimbotToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-aimbotToggle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Vermelho (OFF)
-
-local aimbotActive = false
-local aimbotTarget = nil
-
--- Função para ativar e desativar o Aimbot
-aimbotToggle.MouseButton1Click:Connect(function()
-    aimbotActive = not aimbotActive
-    if aimbotActive then
-        aimbotToggle.Text = "ON"
-        aimbotToggle.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Verde (ON)
-        -- Encontrar um alvo para o aimbot
-        for _, player in ipairs(game.Players:GetPlayers()) do
-            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player ~= game.Players.LocalPlayer then
-                aimbotTarget = player.Character.HumanoidRootPart
-                break
-            end
-        end
-    else
-        aimbotToggle.Text = "OFF"
-        aimbotToggle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Vermelho (OFF)
-    end
-end)
-
--- Função do Aimbot
-game:GetService("RunService").Heartbeat:Connect(function()
-    if aimbotActive and aimbotTarget then
-        local targetPos = aimbotTarget.Position
-        -- Ajustar a mira para o alvo
-        -- Aqui você pode usar o código do aimbot para ajustar a posição da câmera ou para seguir o alvo
-    end
-end)
-
--- Criar a função para o Aimbot de Mobs
-local mobAimbotTab = Instance.new("Frame", panel)
-mobAimbotTab.Size = UDim2.new(1, 0, 0.3, 0)
-mobAimbotTab.Position = UDim2.new(0, 0, 0.5, 0)
-mobAimbotTab.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-
-local mobAimbotLabel = Instance.new("TextLabel", mobAimbotTab)
-mobAimbotLabel.Size = UDim2.new(1, 0, 0.5, 0)
-mobAimbotLabel.Text = "Aimbot - Mobs"
-mobAimbotLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-mobAimbotLabel.TextSize = 24
-mobAimbotLabel.BackgroundTransparency = 1
-
-local mobAimbotToggle = Instance.new("TextButton", mobAimbotTab)
-mobAimbotToggle.Size = UDim2.new(0.8, 0, 0.3, 0)
-mobAimbotToggle.Position = UDim2.new(0.1, 0, 0.5, 0)
-mobAimbotToggle.Text = "OFF"
-mobAimbotToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-mobAimbotToggle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Vermelho (OFF)
-
-local mobAimbotActive = false
-local mobAimbotTarget = nil
-
--- Função para ativar e desativar o Aimbot de Mobs
-mobAimbotToggle.MouseButton1Click:Connect(function()
-    mobAimbotActive = not mobAimbotActive
-    if mobAimbotActive then
-        mobAimbotToggle.Text = "ON"
-        mobAimbotToggle.BackgroundColor3 = Color3.fromRGB(0, 255, 0)  -- Verde (ON)
-        -- Aqui você pode implementar a lógica para encontrar e mirar em mobs
-    else
-        mobAimbotToggle.Text = "OFF"
-        mobAimbotToggle.BackgroundColor3 = Color3.fromRGB(255, 0, 0)  -- Vermelho (OFF)
-    end
-end)
-
--- Função do Aimbot de Mobs
-game:GetService("RunService").Heartbeat:Connect(function()
-    if mobAimbotActive and mobAimbotTarget then
-        local targetPos = mobAimbotTarget.Position
-        -- Ajustar a mira para o mob
-    end
+    Tabs[name] = tab
 end
+
+createTab("Aimbot Player", 10)
+createTab("Aimbot Mobs", 120)
+createTab("Dados", 230)
+
+-- Conteúdo
+local OnOffButton = Instance.new("TextButton", ScreenGui)
+OnOffButton.Size = UDim2.new(0, 80, 0, 40)
+OnOffButton.Position = UDim2.new(0.5, -40, 0.8, 0)
+OnOffButton.BackgroundColor3 = Color3.fromRGB(100, 0, 200)
+OnOffButton.Text = "ON / OFF"
+OnOffButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+OnOffButton.TextSize = 14
+OnOffButton.Visible = false
+OnOffButton.Name = "AimbotToggle"
+
+local ButtonCorner = Instance.new("UICorner", OnOffButton)
+ButtonCorner.CornerRadius = UDim.new(0, 8)
+
+Tabs["Aimbot Player"].MouseButton1Click:Connect(function()
+    OnOffButton.Visible = true
+end)
+
+Tabs["Aimbot Mobs"].MouseButton1Click:Connect(function()
+    OnOffButton.Visible = true
+end)
+
+-- Flutuante para abrir/fechar
+local ToggleBtn = Instance.new("ImageButton", ScreenGui)
+ToggleBtn.Size = UDim2.new(0, 60, 0, 60)
+ToggleBtn.Position = UDim2.new(0, 10, 0.5, -30)
+ToggleBtn.Image = "rbxassetid://13042449981" -- Ícone de arma (batata frita se preferir trocar)
+ToggleBtn.BackgroundTransparency = 1
+
+local dragging, dragInput, dragStart, startPos
+ToggleBtn.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = ToggleBtn.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+ToggleBtn.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        ToggleBtn.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+ToggleBtn.MouseButton1Click:Connect(function()
+    Main.Visible = not Main.Visible
+end)
