@@ -1,134 +1,123 @@
+-- SHADOW HUB Interface Futurista Mobile
+
 local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local executor = identifyexecutor and identifyexecutor() or "Desconhecido"
+
+-- GUI principal
+local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
+ScreenGui.Name = "SHADOW_GUI"
+ScreenGui.ResetOnSpawn = false
+
+-- Botão flutuante para abrir/fechar
+local ToggleButton = Instance.new("TextButton", ScreenGui)
+ToggleButton.Size = UDim2.new(0, 50, 0, 50)
+ToggleButton.Position = UDim2.new(0, 20, 0.5, -25)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ToggleButton.Text = "≡"
+ToggleButton.TextScaled = true
+ToggleButton.AutoButtonColor = false
+ToggleButton.ZIndex = 10
+
+-- Janela principal
+local MainFrame = Instance.new("Frame", ScreenGui)
+MainFrame.Size = UDim2.new(0, 300, 0, 370)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -180)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.BorderColor3 = Color3.fromRGB(170, 0, 255)
+MainFrame.BorderSizePixel = 2
+MainFrame.Visible = false
+MainFrame.Active = true
+MainFrame.Draggable = true
+
+-- Título
+local Title = Instance.new("TextLabel", MainFrame)
+Title.Size = UDim2.new(1, 0, 0, 40)
+Title.BackgroundTransparency = 1
+Title.Text = "SHADOW HUB"
+Title.Font = Enum.Font.GothamBold
+Title.TextColor3 = Color3.fromRGB(170, 0, 255)
+Title.TextScaled = true
+
+-- Aba: Informações
+local InfoBox = Instance.new("TextLabel", MainFrame)
+InfoBox.Size = UDim2.new(1, -20, 0, 80)
+InfoBox.Position = UDim2.new(0, 10, 0, 50)
+InfoBox.BackgroundTransparency = 0.4
+InfoBox.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+InfoBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+InfoBox.Font = Enum.Font.Gotham
+InfoBox.TextSize = 14
+InfoBox.TextWrapped = true
+InfoBox.TextYAlignment = Enum.TextYAlignment.Top
+InfoBox.Text = "Nick: " .. player.Name .. "\nSkin: " .. player.Character:FindFirstChildOfClass("Shirt") and "Customizada" or "Default" .. "\nExecutor: " .. executor
+
+-- Botão Aimbot
+local AimbotLabel = Instance.new("TextLabel", MainFrame)
+AimbotLabel.Position = UDim2.new(0, 10, 0, 145)
+AimbotLabel.Size = UDim2.new(1, -20, 0, 20)
+AimbotLabel.BackgroundTransparency = 1
+AimbotLabel.Text = "Aimbot: trava mira no NPC mais próximo"
+AimbotLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+AimbotLabel.Font = Enum.Font.Gotham
+AimbotLabel.TextSize = 12
+
+local AimbotButton = Instance.new("TextButton", MainFrame)
+AimbotButton.Position = UDim2.new(0.5, -60, 0, 170)
+AimbotButton.Size = UDim2.new(0, 120, 0, 35)
+AimbotButton.BackgroundColor3 = Color3.fromRGB(30, 0, 60)
+AimbotButton.BorderColor3 = Color3.fromRGB(170, 0, 255)
+AimbotButton.BorderSizePixel = 2
+AimbotButton.Text = "Aimbot: OFF"
+AimbotButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+AimbotButton.Font = Enum.Font.GothamBold
+AimbotButton.TextSize = 14
+
+-- Aimbot lógica
+local aimbotAtivo = false
 local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
-local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
-local Camera = workspace.CurrentCamera
 
--- GUI
-local gui = Instance.new("ScreenGui", LocalPlayer:WaitForChild("PlayerGui"))
-gui.Name = "OMGHUB"
-gui.ResetOnSpawn = false
-
--- Janela Principal
-local main = Instance.new("Frame", gui)
-main.Size = UDim2.new(0, 500, 0, 300)
-main.Position = UDim2.new(0.5, -250, 0.5, -150)
-main.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
-main.BorderSizePixel = 0
-
--- Tornar arrastável no mobile
-local dragging = false
-local dragInput, dragStart, startPos
-
-main.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-		dragging = true
-		dragStart = input.Position
-		startPos = main.Position
-
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
-end)
-
-main.InputChanged:Connect(function(input)
-	if dragging and (input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseMovement) then
-		local delta = input.Position - dragStart
-		main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-	end
-end)
-
--- Sidebar
-local sidebar = Instance.new("Frame", main)
-sidebar.Size = UDim2.new(0, 120, 1, 0)
-sidebar.BackgroundColor3 = Color3.fromRGB(50, 45, 70)
-
-local title = Instance.new("TextLabel", sidebar)
-title.Size = UDim2.new(1, 0, 0, 40)
-title.Text = "OMG HUB"
-title.Font = Enum.Font.GothamBold
-title.TextSize = 18
-title.TextColor3 = Color3.fromRGB(255, 255, 255)
-title.BackgroundTransparency = 1
-
--- Conteúdo
-local content = Instance.new("Frame", main)
-content.Size = UDim2.new(1, -120, 1, 0)
-content.Position = UDim2.new(0, 120, 0, 0)
-content.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
-content.BorderSizePixel = 0
-
--- Página do Aimbot
-local aimbotPage = Instance.new("Frame", content)
-aimbotPage.Size = UDim2.new(1, 0, 1, 0)
-aimbotPage.BackgroundTransparency = 1
-aimbotPage.Visible = false
-
-local toggle = Instance.new("TextButton", aimbotPage)
-toggle.Size = UDim2.new(0, 200, 0, 50)
-toggle.Position = UDim2.new(0.5, -100, 0.5, -25)
-toggle.BackgroundColor3 = Color3.fromRGB(90, 60, 130)
-toggle.Text = "Aimbot: OFF"
-toggle.Font = Enum.Font.GothamBold
-toggle.TextSize = 20
-toggle.TextColor3 = Color3.fromRGB(255, 255, 255)
-toggle.BorderSizePixel = 0
-toggle.ClipsDescendants = true
-Instance.new("UICorner", toggle)
-
--- Lógica do Aimbot
-local aimbotEnabled = false
-toggle.MouseButton1Click:Connect(function()
-	aimbotEnabled = not aimbotEnabled
-	toggle.Text = aimbotEnabled and "Aimbot: ON" or "Aimbot: OFF"
-	toggle.BackgroundColor3 = aimbotEnabled and Color3.fromRGB(130, 70, 200) or Color3.fromRGB(90, 60, 130)
-end)
-
-RunService.RenderStepped:Connect(function()
-	if not aimbotEnabled then return end
-	local character = LocalPlayer.Character
-	if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
-	local closest, distance = nil, math.huge
-	for _, mob in ipairs(workspace:GetDescendants()) do
-		if mob:IsA("Model") and mob:FindFirstChild("Head") and mob ~= character then
-			local dist = (mob.Head.Position - character.HumanoidRootPart.Position).Magnitude
-			if dist < distance then
-				distance = dist
-				closest = mob
-			end
-		end
-	end
-
-	if closest and closest:FindFirstChild("Head") then
-		local pos = closest.Head.Position
-		Camera.CFrame = CFrame.new(Camera.CFrame.Position, pos)
-	end
-end)
-
--- Botões na Sidebar
-local function createButton(name, onClick)
-	local btn = Instance.new("TextButton", sidebar)
-	btn.Size = UDim2.new(1, -20, 0, 35)
-	btn.Position = UDim2.new(0, 10, 0, 45 + (#sidebar:GetChildren() - 2) * 40)
-	btn.Text = name
-	btn.Font = Enum.Font.Gotham
-	btn.TextSize = 16
-	btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-	btn.BackgroundColor3 = Color3.fromRGB(60, 50, 90)
-	btn.BorderSizePixel = 0
-	Instance.new("UICorner", btn)
-	btn.MouseButton1Click:Connect(onClick)
+local function getClosestNPC()
+    local closest, shortest = nil, math.huge
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("Model") and v:FindFirstChild("Humanoid") and v ~= player.Character then
+            local distance = (v:GetPivot().Position - player.Character:GetPivot().Position).Magnitude
+            if distance < shortest then
+                closest = v
+                shortest = distance
+            end
+        end
+    end
+    return closest
 end
 
-createButton("Aimbot", function()
-	aimbotPage.Visible = true
+local function travarMira()
+    RunService:BindToRenderStep("Aimbot", Enum.RenderPriority.Camera.Value + 1, function()
+        local target = getClosestNPC()
+        if target and target:FindFirstChild("HumanoidRootPart") then
+            workspace.CurrentCamera.CFrame = CFrame.new(
+                workspace.CurrentCamera.CFrame.Position,
+                target.HumanoidRootPart.Position
+            )
+        end
+    end)
+end
+
+local function desligarMira()
+    RunService:UnbindFromRenderStep("Aimbot")
+end
+
+AimbotButton.MouseButton1Click:Connect(function()
+    aimbotAtivo = not aimbotAtivo
+    AimbotButton.Text = aimbotAtivo and "Aimbot: ON" or "Aimbot: OFF"
+    if aimbotAtivo then
+        travarMira()
+    else
+        desligarMira()
+    end
 end)
 
-createButton("Fechar", function()
-	gui:Destroy()
+-- Toggle do painel
+ToggleButton.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
 end)
